@@ -1,9 +1,6 @@
+import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.UnbufferedCharStream;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 class ExpressionEvaluator {
@@ -12,9 +9,8 @@ class ExpressionEvaluator {
     private ISLParser.EqualityExpressionContext context;
 
     public void setExpression(String expression) {
-        InputStream stream = new ByteArrayInputStream(expression.getBytes(StandardCharsets.UTF_8));
 
-        ISLLexer lexer = new ISLLexer(new UnbufferedCharStream(stream));
+        ISLLexer lexer = new ISLLexer(new ANTLRInputStream(expression));
 
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ISLParser parser = new ISLParser(tokens);

@@ -30,9 +30,11 @@ public class ExpressionEvaluatorTest extends TestCase {
     @Test
     public void testMultiExp() {
         Assert.assertTrue(testEval("1==1"));
-        Assert.assertFalse(testEval("1!=1"));
-        Assert.assertTrue(testEval("\"2\"!=2"));
-        Assert.assertTrue(testEval("1==1"));
-        Assert.assertTrue(testEval("1==1"));
+        Assert.assertTrue(testEval("\"2\"==\"2\""));
+        Assert.assertTrue(testEval("vInt.int==1", map));
+        Assert.assertTrue(testEval("vInt==\"1\"", map));
+        Assert.assertTrue(testEval("1.00 == 1"));
+        Assert.assertTrue(testEval("1!=1 or 0.bool == false"));
+        Assert.assertFalse(testEval("1!=1 and 2 == 1.1"));
     }
 }
