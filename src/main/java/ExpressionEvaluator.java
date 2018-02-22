@@ -11,7 +11,7 @@ class ExpressionEvaluator {
     private ExpressionVisitor visitor = new ExpressionVisitorImpl();
     private ISLParser.EqualityExpressionContext context;
 
-    public void SetupExpression(String expression) {
+    public void setExpression(String expression) {
         InputStream stream = new ByteArrayInputStream(expression.getBytes(StandardCharsets.UTF_8));
 
         ISLLexer lexer = new ISLLexer(new UnbufferedCharStream(stream));
