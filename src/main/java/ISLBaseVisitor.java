@@ -1,4 +1,4 @@
-// Generated from C:/Users/weid/PycharmProjects/test_antlr/src/main/resources\ISL.g4 by ANTLR 4.7
+// Generated from /home/weid/projects/antlr4Example/src/main/resources/ISL.g4 by ANTLR 4.7
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -30,7 +30,7 @@ public class ISLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements IS
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitNumber(ISLParser.NumberContext ctx) { return visitChildren(ctx); }
+	@Override public T visitExpCmp(ISLParser.ExpCmpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -44,20 +44,6 @@ public class ISLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements IS
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIfExp(ISLParser.IfExpContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitNEGExp(ISLParser.NEGExpContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitString(ISLParser.StringContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -65,14 +51,7 @@ public class ISLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements IS
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTransform(ISLParser.TransformContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitParen(ISLParser.ParenContext ctx) { return visitChildren(ctx); }
+	@Override public T visitLogicalNotEqExp(ISLParser.LogicalNotEqExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -86,21 +65,35 @@ public class ISLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements IS
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLogicalParen(ISLParser.LogicalParenContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNumber(ISLParser.NumberContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLogicalExpCmp(ISLParser.LogicalExpCmpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNegExp(ISLParser.NegExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLogicalEqExpCmp(ISLParser.LogicalEqExpCmpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitExpLogicalAnd(ISLParser.ExpLogicalAndContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitExpLogicalOr(ISLParser.ExpLogicalOrContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIfExp(ISLParser.IfExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -114,5 +107,5 @@ public class ISLBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements IS
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLogicalNotEqExp(ISLParser.LogicalNotEqExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParen(ISLParser.ParenContext ctx) { return visitChildren(ctx); }
 }

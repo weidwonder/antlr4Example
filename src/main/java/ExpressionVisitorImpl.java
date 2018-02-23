@@ -28,14 +28,29 @@ public class ExpressionVisitorImpl extends ExpressionVisitor {
     @Override
     public Result visitTerminal(TerminalNode node) {
         switch (node.getSymbol().getType()) {
-            case ISLParser.VARIABLE: {
+            case ISLParser.VARIABLE:
                 return new Result<String>(getVar(node.getText()));
-            }
-            case ISLParser.TRANSFORM: {
+
+            case ISLParser.TRANSFORM:
                 return new Result<String>(node.getText());
+
+            case ISLParser.TRUE:
+                return new Result<Boolean>(true);
+
+            case ISLParser.FALSE:
+                return new Result<Boolean>(false);
+
+            case ISLParser.NULL:
+                return new Result();
+
+            case ISLParser.STRING: {
+                Result r = new Result<String>();
+                String s = node.getText();
+                r.value = s.substring(1, s.length() - 1);
+                return r;
             }
             default:
-                return visit(node);
+                return super.visitTerminal(node);
         }
     }
 
@@ -103,36 +118,87 @@ public class ExpressionVisitorImpl extends ExpressionVisitor {
     }
 
     @Override
-    public Result visitTransform(ISLParser.TransformContext ctx) {
-        return new Result<String>(ctx.TRANSFORM().getText());
-    }
-
-    @Override
     public Result visitIfExp(ISLParser.IfExpContext ctx) {
         Result te = visit(ctx.te);
         Result fe = visit(ctx.fe);
         Result ee = visit(ctx.ee);
-        if (ee.value == null) {
+        if (ee.toBoolean()) {
+            return te;
+        } else {
             return fe;
         }
-        if (ee.value instanceof Integer) {
-            return ee.value.equals(0) ? fe : te;
-        }
-        if (ee.value instanceof String) {
-            return ee.value.equals("") ? fe : te;
-        }
-        if (ee.value instanceof Double) {
-            return ee.value.equals(0.0) ? fe : te;
-        }
-        if (ee.value instanceof Boolean) {
-            return (Boolean) ee.value ? te : fe;
-        }
-        throw new ExpressionError("不能识别的if条件表达式类型:" +
-                ctx.ee.getText());
     }
 
     @Override
-    public Result visitNEGExp(ISLParser.NEGExpContext ctx) {
+    public Result visitExpCmp(ISLParser.ExpCmpContext ctx) {
+        Result r = new Result<Boolean>();
+        Result left = visit(ctx.expression(0));
+        Result right = visit(ctx.expression(1));
+        int op = ctx.op.getType();
+        if (left.value == null && right.value == null) {
+            r.value = true;
+            return r;
+        }
+        if (left.value == null || right.value == null) {
+            r.value = false;
+            return r;
+        }
+        switch (op) {
+            case ISLParser.GT: {
+                r.value = compare(left, right) > 0;
+                break;
+            }
+            case ISLParser.GTE: {
+                r.value = compare(left, right) >= 0;
+                break;
+            }
+            case ISLParser.LT: {
+                r.value = compare(left, right) < 0;
+                break;
+            }
+            case ISLParser.LTE: {
+                r.value = compare(left, right) <= 0;
+                break;
+            }
+            case ISLParser.EQ: {
+                r.value = compare(left, right) == 0;
+                break;
+            }
+            case ISLParser.NE: {
+                r.value = compare(left, right) != 0;
+                break;
+            }
+            case ISLParser.CONTAINS: {
+                if (!(left.value instanceof String) || !(right.value instanceof String)) {
+                    throw new ExpressionError("contains 只能用于字符串");
+                }
+                r.value = ((String) left.value).contains((String) right.value);
+                break;
+            }
+        }
+        return r;
+    }
+
+    @Override
+    public Result visitExpLogicalAnd(ISLParser.ExpLogicalAndContext ctx) {
+        Result<Boolean> r = new Result<>();
+        Result left = visit(ctx.expression(0));
+        Result right = visit(ctx.expression(1));
+        r.value = left.toBoolean() && right.toBoolean();
+        return r;
+    }
+
+    @Override
+    public Result visitExpLogicalOr(ISLParser.ExpLogicalOrContext ctx) {
+        Result<Boolean> r = new Result<>();
+        Result left = visit(ctx.expression(0));
+        Result right = visit(ctx.expression(1));
+        r.value = left.toBoolean() || right.toBoolean();
+        return r;
+    }
+
+    @Override
+    public Result visitNegExp(ISLParser.NegExpContext ctx) {
         Result r = new Result();
         Result exp = visit(ctx.expression());
         if (exp.value == null) {
@@ -177,8 +243,8 @@ public class ExpressionVisitorImpl extends ExpressionVisitor {
     }
 
     @Override
-    public Result visitLogicalParen(ISLParser.LogicalParenContext ctx) {
-        return visit(ctx.equalityExpression());
+    public Result visitLogicalTrue(ISLParser.LogicalTrueContext ctx) {
+        return new Result<Boolean>(true);
     }
 
     @Override
@@ -187,94 +253,8 @@ public class ExpressionVisitorImpl extends ExpressionVisitor {
     }
 
     @Override
-    public Result visitLogicalExpCmp(ISLParser.LogicalExpCmpContext ctx) {
-        Result r = new Result<Boolean>();
-        Result left = visit(ctx.expression(0));
-        Result right = visit(ctx.expression(1));
-        int op = ctx.op.getType();
-        if (left.value == null && right.value == null) {
-            r.value = true;
-            return r;
-        }
-        if (left.value == null || right.value == null) {
-            r.value = false;
-            return r;
-        }
-        switch (op) {
-            case ISLParser.GT: {
-                r.value = compare(left, right) > 0;
-                break;
-            }
-            case ISLParser.GTE: {
-                r.value = compare(left, right) >= 0;
-                break;
-            }
-            case ISLParser.LT: {
-                r.value = compare(left, right) < 0;
-                break;
-            }
-            case ISLParser.LTE: {
-                r.value = compare(left, right) <= 0;
-                break;
-            }
-            case ISLParser.EQ: {
-                r.value = compare(left, right) == 0;
-                break;
-            }
-            case ISLParser.NE: {
-                r.value = compare(left, right) != 0;
-                break;
-            }
-            case ISLParser.CONTAINS: {
-                if (!(left.value instanceof String) || !(right.value instanceof ISLParser.StringContext)) {
-                    throw new ExpressionError("contains 只能用于字符串");
-                }
-                r.value = ((String) left.value).contains((String) right.value);
-                break;
-            }
-        }
-        return r;
-    }
-
-    @Override
-    public Result visitLogicalEqExpCmp(ISLParser.LogicalEqExpCmpContext ctx) {
-        Result r = new Result<Boolean>();
-        Result<Boolean> left = visit(ctx.equalityExpression(0));
-        Result<Boolean> right = visit(ctx.equalityExpression(1));
-        int op = ctx.op.getType();
-        switch (op) {
-            case ISLParser.EQ: {
-                r.value = compare(left, right) == 0;
-                break;
-            }
-            case ISLParser.NE: {
-                r.value = compare(left, right) != 0;
-                break;
-            }
-            case ISLParser.AND: {
-                r.value = left.value && right.value;
-                break;
-            }
-            case ISLParser.OR: {
-                r.value = left.value || right.value;
-                break;
-            }
-            case ISLParser.NOT: {
-                r.value = left.value || right.value;
-                break;
-            }
-        }
-        return r;
-    }
-
-    @Override
     public Result visitLogicalNotEqExp(ISLParser.LogicalNotEqExpContext ctx) {
-        return new Result(!(Boolean) visit(ctx.equalityExpression()).value);
-    }
-
-    @Override
-    public Result visitLogicalTrue(ISLParser.LogicalTrueContext ctx) {
-        return new Result<Boolean>(true);
+        return new Result(!(Boolean) visit(ctx.expression()).value);
     }
 
     private int compare(Result i, Result j) {
@@ -296,5 +276,4 @@ public class ExpressionVisitorImpl extends ExpressionVisitor {
 
         return n1c.compareTo(n2c);
     }
-
 }

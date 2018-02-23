@@ -3,24 +3,21 @@ grammar ISL;
 
 expression
     : NUMBER            #Number
+    | TRUE        #LogicalTrue
+    | FALSE        #LogicalFalse
     | STRING            #String
     | NULL              #Null
-    | TRANSFORM         #Transform
     | VARIABLE          #Variable
-    | expression'.'TRANSFORM  #Attribute
-    | NEG expression    #NEGExp
     | LEFT_PAREN expression RIGHT_PAREN    #Paren
-    | te=expression IF ee=equalityExpression ELSE fe=expression  #ifExp
+    | expression'.'TRANSFORM  #Attribute
+    | NOT expression    #LogicalNotEqExp
+    | NEG expression    #NegExp
+    | te=expression IF ee=expression ELSE fe=expression  #ifExp
+    | expression op=(GT | GTE | LT | LTE | EQ | NE | CONTAINS) expression    #ExpCmp
+    | expression AND expression    #ExpLogicalAnd
+    | expression OR expression    #ExpLogicalOr
 ;
 
-equalityExpression
-    : TRUE        #LogicalTrue
-    | FALSE        #LogicalFalse
-    | expression op=(GT | GTE | LT | LTE | EQ | NE | CONTAINS) expression    #LogicalExpCmp
-    | equalityExpression op=(AND | OR | EQ | NE) equalityExpression    #LogicalEqExpCmp
-    | NOT equalityExpression    #LogicalNotEqExp
-    | LEFT_PAREN equalityExpression RIGHT_PAREN        # LogicalParen
-;
 
 
 NEG : '-' ;
@@ -39,7 +36,6 @@ NOT : 'not' ;
 CONTAINS: 'contains' ;
 LEFT_PAREN : '(' ;
 RIGHT_PAREN : ')' ;
-CR : '\n' ;
 IF : 'if' ;
 ELSE : 'else' ;
 DOUBLE_QUOTATION : '"' ;
